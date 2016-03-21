@@ -209,7 +209,7 @@ void get_bounding_box ( std::string first_key, std::string second_key,std::multi
 
 }
 
-#define PROCEED_TESSAPI 1
+#define PROCEED_TESSAPI 0
 
 int main(int argc, char* argv[]) {
 	XMLPlatformUtils::Initialize();
@@ -220,7 +220,7 @@ int main(int argc, char* argv[]) {
 #if !PROCEED_TESSAPI
 	text1 = (char * )malloc (2 << 20);
 	// just to be quicker we can use previous parsed data that the program have done before
-	FILE * fd = fopen ("DWC1Test.txt", "r");
+	FILE * fd = fopen ("DWC1Test.hocr", "r");
 
 
 	memset (text1,0,2 << 20);
@@ -282,13 +282,18 @@ int main(int argc, char* argv[]) {
 #endif
 
 		XercesDOMParser* parser = new XercesDOMParser();
-		parser->setValidationScheme(XercesDOMParser::Val_Always);
-		parser->setDoNamespaces(true);    // optional
+		//parser->setValidationScheme(XercesDOMParser::Val_Always);
+		//parser->setDoNamespaces(true);    // optional
 
 
 		ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
 		parser->setErrorHandler(errHandler);
 
+
+		parser->setIgnoreCachedDTD(true);
+		parser->setLoadExternalDTD(false);
+		parser->setLoadSchema(false);
+		parser->setLowWaterMark(false);
 #if !PROCEED_TESSAPI
 		MemBufInputSource myxml_buf((const  XMLByte* const)text1,strlen(text1),
 			"myxml (in memory)");
@@ -298,7 +303,10 @@ int main(int argc, char* argv[]) {
 			"myxml (in memory)");
 #endif
 
+
 		parser->parse(myxml_buf);
+
+
 
 
 		xercesc_3_1::DOMDocument * doc = parser->getDocument();
@@ -321,7 +329,7 @@ int main(int argc, char* argv[]) {
 
 		int x1,y1,x2,y2;
 
-		get_bounding_box ("Nrmt!3re_" , "__j_Today’s", dictionary, x1,y1,x2,y2 );
+		get_bounding_box ("Nambre" , "Today’s", dictionary, x1,y1,x2,y2 );
 
 		printf (" x1 is %d y1 is %d x2 is %d y2 is %d\n", x1,y1,x2,y2);
 	
