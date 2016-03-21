@@ -40,81 +40,81 @@ std::multimap <std::string, DOMNode *> dictionary;
 void show_element ( DOMNode *  Node)
 {
 
-			printf ("node name is %s\n", XMLString::transcode (Node->getNodeName()));
+	printf ("node name is %s\n", XMLString::transcode (Node->getNodeName()));
 
-			const XMLCh * x_str = Node->getNodeValue();
-			if ( x_str)
-			{
-				printf ("node value is %s\n",XMLString::transcode (x_str) );
+	const XMLCh * x_str = Node->getNodeValue();
+	if ( x_str)
+	{
+		printf ("node value is %s\n",XMLString::transcode (x_str) );
 
-				if (! strcmp ( XMLString::transcode (Node->getNodeValue()),"Nombre"))
-				{
-					printf ("Oops\n");
-				}
-			}
+		if (! strcmp ( XMLString::transcode (Node->getNodeValue()),"Nombre"))
+		{
+			printf ("Oops\n");
+		}
+	}
 
-			DOMNamedNodeMap * map = Node->getAttributes();
+	DOMNamedNodeMap * map = Node->getAttributes();
 
-		if (map)
+	if (map)
 		for ( int i =0 ; i < map->getLength(); i ++)
 		{
-			
+
 			const XMLCh * x_str = map->item(i)->getNodeName();
 			if (x_str)
 
-			printf ("Atribute name is %s\n", XMLString::transcode (x_str));
+				printf ("Atribute name is %s\n", XMLString::transcode (x_str));
 
 
-			
-			 x_str = map->item(i)->getNodeValue();
+
+			x_str = map->item(i)->getNodeValue();
 			if (x_str)
 
-			printf ("Attribute value is %s\n", XMLString::transcode (x_str));
+				printf ("Attribute value is %s\n", XMLString::transcode (x_str));
 
 
 
 		}
 
-	
-		
+
+
 		DOMNodeList * list = Node->getChildNodes();
 
 		for ( int i =0 ; i < list->getLength(); i ++)
 		{
 			show_element ( list->item(i));
-		
+
 
 		}
-		
+
 
 }
 
 bool extract_bb (DOMNode * Node ,int& x1,int& y1,int& x2, int &y2)
 {
 
-			DOMNamedNodeMap * map = Node->getAttributes();
+	DOMNamedNodeMap * map = Node->getAttributes();
 
-		if (map)
+	if (map)
 		for ( int i =0 ; i < map->getLength(); i ++)
 		{
-			
+
 			const XMLCh * x_str = map->item(i)->getNodeName();
 			if (x_str)
 
-			if (!strcmp (  XMLString::transcode (x_str),"title"))
-			{
-				 x_str = map->item(i)->getNodeValue();
-				 sscanf ( XMLString::transcode (x_str),"%*s %d %d %d %d", &x1,&y1,&x2,&y2);
-			
+				if (!strcmp (  XMLString::transcode (x_str),"title"))
+				{
+					x_str = map->item(i)->getNodeValue();
+					sscanf ( XMLString::transcode (x_str),"%*s %d %d %d %d", &x1,&y1,&x2,&y2);
 
-				 return true;
 
-			
-			}
+					return true;
 
-			
-		
-			
+
+				}
+
+
+
+
 
 
 		}
@@ -126,25 +126,25 @@ bool extract_bb (DOMNode * Node ,int& x1,int& y1,int& x2, int &y2)
 void start_dictionary ( DOMNode  * Node )
 {
 
-	
-		
 
-			const XMLCh * x_str = Node->getNodeValue();
-			if ( x_str)
-			{
-				
-				dictionary.insert( std::pair <std::string, DOMNode *>( std::string(XMLString::transcode(x_str)),Node));
-	
-			}
 
-		
-		DOMNodeList * list = Node->getChildNodes();
 
-		for ( int i =0 ; i < list->getLength(); i ++)
-		{
-			start_dictionary ( list->item(i));
-		}
-		
+	const XMLCh * x_str = Node->getNodeValue();
+	if ( x_str)
+	{
+
+		dictionary.insert( std::pair <std::string, DOMNode *>( std::string(XMLString::transcode(x_str)),Node));
+
+	}
+
+
+	DOMNodeList * list = Node->getChildNodes();
+
+	for ( int i =0 ; i < list->getLength(); i ++)
+	{
+		start_dictionary ( list->item(i));
+	}
+
 }
 
 
@@ -155,7 +155,7 @@ void get_bounding_box ( std::string first_key, std::string second_key,std::multi
 	ret_first = dic.equal_range (first_key);
 
 	ret_second = dic.equal_range (second_key);
-	
+
 
 	for (std::multimap <std::string, DOMNode *>::iterator it1 = ret_first.first; it1 != ret_first.second ; it1++)
 	{
@@ -164,14 +164,14 @@ void get_bounding_box ( std::string first_key, std::string second_key,std::multi
 		{
 
 			DOMNode* parent1 =  it1->second->getParentNode()->getParentNode();
-			
+
 			DOMNode* parent2 =  it2->second->getParentNode()->getParentNode();
 
 
 			if ((unsigned int) parent1  == (unsigned int)parent2)
 			{
 
-				
+
 				show_element (it1->second->getParentNode()  );
 				show_element ( it2->second->getParentNode());
 
@@ -186,7 +186,7 @@ void get_bounding_box ( std::string first_key, std::string second_key,std::multi
 				x_center = (x1+x2+x3+x4)/4;
 				y_center = (y1+y2+y3+y4)/4;
 
-// TODO more complicated logic is needed
+				// TODO more complicated logic is needed
 
 				x1_res= x2;
 
@@ -197,102 +197,110 @@ void get_bounding_box ( std::string first_key, std::string second_key,std::multi
 				y2_res = y4;
 
 
-			
+
 			}
 
-			
-				
 
-			
+
+
+
 		}
 	}
 
 }
 
+#define PROCEED_TESSAPI 1
 
 int main(int argc, char* argv[]) {
-            XMLPlatformUtils::Initialize();
-
-    tesseract::TessBaseAPI tessApi;
-    tessApi.Init("./", "eng+spa");// тут data каталог в котором лежат файлы *.traineddata,
-    // а rus указывает какой именно из них использовать
-    if(argc > 1) {
-        PIX *pix = pixRead(argv[1]);// считываем картинку из файла с именем,
-        // переданным первым аргументом, это функционал Leptonica
-        tessApi.SetImage(pix);// говорим tesseract, что распознавать нужно эту картинку
-       
-		char* text1,*text;
-		FILE * fd = fopen ("DWC1Test.txt", "r");
-
-		 text1 = (char * )malloc (2 << 20);
-
-		memset (text1,0,2 << 20);
-
-		size_t sz = fread (text1,1,(2 << 20),fd);
-
-		text1[sz] = 0;
-
-		fclose (fd);
+	XMLPlatformUtils::Initialize();
 
 
-		/*
-		
-		 text = tessApi.GetHOCRText(0);
+	char* text1,*text;
 
-		
-		
+#if !PROCEED_TESSAPI
+	text1 = (char * )malloc (2 << 20);
+	// just to be quicker we can use previous parsed data that the program have done before
+	FILE * fd = fopen ("DWC1Test.txt", "r");
+
+
+	memset (text1,0,2 << 20);
+
+	size_t sz = fread (text1,1,(2 << 20),fd);
+	// make str null termenating
+	text1[sz] = 0;
+
+	fclose (fd);
+#endif
+
+#if PROCEED_TESSAPI
+
+	tesseract::TessBaseAPI tessApi;
+	tessApi.Init("./", "eng+spa");// loading language data
+
+	if(argc > 1) {
+		PIX *pix = pixRead(argv[1]);// reading image with leptonica lin, argv[1] - name of the file to read
+
+		tessApi.SetImage(pix);// 
+
+
+
+		text = tessApi.GetHOCRText(0);
+
+
+
 		//char *text = tessApi.GetUTF8Text();//распознаЄм
-        
-		
-		//---генерируем им€ файла в который будет записан распознанный текст
-        char *fileName = NULL;
-        long prefixLength;
-        const char* lastDotPosition = strrchr(argv[1], '.');
-        if(lastDotPosition != NULL) {
-            prefixLength = lastDotPosition - argv[1];
-            fileName = new char[prefixLength + 5];
-            strncpy(fileName, argv[1], prefixLength);
-            strcpy(fileName + prefixLength, ".txt\0");
-        } else {
-            exit(1);
-        }
-        //---
-       FILE *outF = fopen(fileName, "w");
-		delete [] fileName;
-		fprintf(outF, "%s", text);
-        fclose(outF);
-		
-		int c =0;
 
-		while(!strncmp (text,text1,c))
-		{
-		c++;
+
+		//---генерируем им€ файла в который будет записан распознанный текст
+		char *fileName = NULL;
+		long prefixLength;
+		const char* lastDotPosition = strrchr(argv[1], '.');
+		if(lastDotPosition != NULL) {
+			prefixLength = lastDotPosition - argv[1];
+			fileName = new char[prefixLength + 5];
+			strncpy(fileName, argv[1], prefixLength);
+			strcpy(fileName + prefixLength, ".txt\0");
+		} else {
+			exit(1);
 		}
 
-		*/
-//		int b = strlen (text);
-		int d = strlen (text1);
-        //---
-		
-        pixDestroy(&pix);
+		FILE *outF = fopen(fileName, "w");
+		delete [] fileName;
+		fprintf(outF, "%s", text);
+		fclose(outF);
 
-		
+	
 
+
+		pixDestroy(&pix);
+
+	}
+	else
+	{
+		return 0;
+	}
+#endif
 
 		XercesDOMParser* parser = new XercesDOMParser();
-        parser->setValidationScheme(XercesDOMParser::Val_Always);
-        parser->setDoNamespaces(true);    // optional
+		parser->setValidationScheme(XercesDOMParser::Val_Always);
+		parser->setDoNamespaces(true);    // optional
 
 
 		ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
-        parser->setErrorHandler(errHandler);
-    
+		parser->setErrorHandler(errHandler);
 
+#if !PROCEED_TESSAPI
 		MemBufInputSource myxml_buf((const  XMLByte* const)text1,strlen(text1),
-                                     "myxml (in memory)");
+			"myxml (in memory)");
+#endif
+#if PROCEED_TESSAPI
+		MemBufInputSource myxml_buf((const  XMLByte* const)text,strlen(text),
+			"myxml (in memory)");
+#endif
+
 		parser->parse(myxml_buf);
 
-    
+
 		xercesc_3_1::DOMDocument * doc = parser->getDocument();
 
 		DOMNodeList * list = doc->getChildNodes();
@@ -304,11 +312,11 @@ int main(int argc, char* argv[]) {
 
 			printf ("node value is %s\n", XMLString::transcode (doc->getChildNodes()->item(i)->getNodeValue()));
 
-		//	show_element ( list->item(i));
+			//	show_element ( list->item(i));
 			start_dictionary ( list->item(i));
 
-		
-		// delete [] text;
+
+			// delete [] text;
 		}
 
 		int x1,y1,x2,y2;
@@ -316,7 +324,7 @@ int main(int argc, char* argv[]) {
 		get_bounding_box ("Nrmt!3re_" , "__j_TodayТs", dictionary, x1,y1,x2,y2 );
 
 		printf (" x1 is %d y1 is %d x2 is %d y2 is %d\n", x1,y1,x2,y2);
-    }
-    return 0;
+	
+	return 0;
 }
 
