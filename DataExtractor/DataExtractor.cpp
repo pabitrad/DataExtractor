@@ -45,10 +45,6 @@ struct keyword_candidate
 	double probability;
 };
 
-
-
-
-
 struct search_entry
 {
 	std::string KeyPhrase1;
@@ -65,7 +61,6 @@ std::string KeyPhrase2;
 int index;
 int x1,y1,x2,y2;
 };
-
 
 void show_element ( DOMNode *  Node)
 {
@@ -152,8 +147,6 @@ bool extract_bb (DOMNode * Node ,int& x1,int& y1,int& x2, int &y2)
 
 }
 
-
-
 void		get_key_word_candidates (std::string keyword, std::multimap <std::string, DOMNode *> dictionary ,std::vector <keyword_candidate > & KeyWord_candidates)
 {
 
@@ -174,7 +167,6 @@ void		get_key_word_candidates (std::string keyword, std::multimap <std::string, 
 		}
 	}
 }
-
 
 double custom_compare (std::string str1, std::string str2)
 {
@@ -212,12 +204,11 @@ void get_key_word_candidates_v2(std::string keyword, std::vector < std::pair <st
 			key.probability = prob;
 			KeyWord_candidates.push_back(key);
 		}
-	
+
 
 	}
-			
-}
 
+}
 
 void construct_multimap ( DOMNode  * Node, std::multimap < std::string, DOMNode * > & map )
 {
@@ -253,11 +244,6 @@ void construct_vector ( DOMNode  * Node, std::vector < std::pair <std::string, D
 
 }
 
-
-
-
-
-
 bool find_keyword_matching_on_line (std::vector <keyword_candidate > keys1,std::vector <keyword_candidate > keys2, keyword_candidate & key1, keyword_candidate & key2)
 {
 	for ( auto it1 = keys1.begin() ; it1 != keys1.end(); it1++)
@@ -287,7 +273,6 @@ bool find_keyword_matching_on_line (std::vector <keyword_candidate > keys1,std::
 	return false;
 }
 
-
 markerbox get_marker_box ( keyword_candidate & key1, keyword_candidate & key2,search_entry & entry)
 {
 	markerbox box;
@@ -305,6 +290,57 @@ markerbox get_marker_box ( keyword_candidate & key1, keyword_candidate & key2,se
 
 	box.x1 = x2+entry.deltaX1;
 	box.y1 = y1+entry.deltaY1;
+
+	box.x2 = x3+entry.deltaX2;
+	box.y2 = y4+entry.deltaY2;
+
+	return box;
+}
+
+
+markerbox get_marker_box_left ( keyword_candidate & key1,search_entry & entry)
+{
+	markerbox box;
+
+	box.KeyPhrase1 = key1.keyword;
+	
+
+
+	box.index = entry.index;
+
+	int x1,y1,x2,y2;
+	int x3,y3,x4,y4;
+
+	extract_bb(key1.Node->getParentNode(),x1,y1,x2,y2);
+	extract_bb(key1.Node->getParentNode(),x3,y3,x4,y4);
+
+	box.x1 = x2+entry.deltaX1;
+	box.y1 = y1+entry.deltaY1;
+
+	box.x2 = x2+entry.deltaX2+entry.NextDataXOffset;
+	box.y2 = y4+entry.deltaY2+entry.NextDataYOffset;
+
+	return box;
+}
+
+
+markerbox get_marker_box_right ( keyword_candidate & key2 ,search_entry & entry)
+{
+	markerbox box;
+
+	//box.KeyPhrase1 = key1.keyword;
+	box.KeyPhrase2 = key2.keyword;
+
+	box.index = entry.index;
+
+	int x1,y1,x2,y2;
+	int x3,y3,x4,y4;
+
+	extract_bb(key2.Node->getParentNode(),x1,y1,x2,y2);
+	extract_bb(key2.Node->getParentNode(),x3,y3,x4,y4);
+
+	box.x1 = x2+entry.deltaX1+entry.NextDataXOffset;
+	box.y1 = y1+entry.deltaY1+entry.NextDataYOffset;
 
 	box.x2 = x3+entry.deltaX2;
 	box.y2 = y4+entry.deltaY2;
@@ -337,31 +373,55 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 	{
 
 		// for earch boundbox we have to search
-
-
 		// case if both words is
 
+		
+			std::vector <keyword_candidate > KeyWord1_candidates,KeyWord2_candidates;
 
-		std::vector <keyword_candidate > KeyWord1_candidates,KeyWord2_candidates;
+
+			get_key_word_candidates (search_entry_it->KeyPhrase1 ,dictionary ,KeyWord1_candidates);		
+			get_key_word_candidates (search_entry_it->KeyPhrase2 ,dictionary ,KeyWord2_candidates);
+
+			get_key_word_candidates_v2 (search_entry_it->KeyPhrase1 ,vector_nodes ,KeyWord1_candidates);	
+			get_key_word_candidates_v2 (search_entry_it->KeyPhrase2 ,vector_nodes ,KeyWord2_candidates);	
+
+
+			keyword_candidate key1,key2;
+
+
+			if (find_keyword_matching_on_line (KeyWord1_candidates,KeyWord2_candidates, key1,  key2))
+			{
+				markerbox box = get_marker_box ( key1, key2,*(search_entry_it));
+
+				boxes.push_back(box);
+			}
+			else
+			{
+				if (KeyWord1_candidates.empty() && !KeyWord2_candidates.empty())
+				{
+					
+					markerbox box = get_marker_box_right (  KeyWord2_candidates.at(0),*(search_entry_it));
+					boxes.push_back(box);
+				}
+
+
+				if (KeyWord2_candidates.empty() && !KeyWord1_candidates.empty())
+				{
+					
+					markerbox box = get_marker_box_left (  KeyWord1_candidates.at(0),*(search_entry_it));
+				boxes.push_back(box);
+				}
+
+
+			
+			}
+		}
 
 		
-		get_key_word_candidates (search_entry_it->KeyPhrase1 ,dictionary ,KeyWord1_candidates);		
-		get_key_word_candidates (search_entry_it->KeyPhrase2 ,dictionary ,KeyWord2_candidates);
-
-		get_key_word_candidates_v2 (search_entry_it->KeyPhrase1 ,vector_nodes ,KeyWord1_candidates);	
-		get_key_word_candidates_v2 (search_entry_it->KeyPhrase2 ,vector_nodes ,KeyWord2_candidates);	
 
 
-		keyword_candidate key1,key2;
 
-
-		if (find_keyword_matching_on_line (KeyWord1_candidates,KeyWord2_candidates, key1,  key2))
-		{
-			markerbox box = get_marker_box ( key1, key2,*(search_entry_it));
-
-			boxes.push_back(box);
-		}
-	}
+	
 	return true;
 }
 
