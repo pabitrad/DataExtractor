@@ -24,6 +24,7 @@
 #include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/sax/InputSource.hpp>
 #include <xercesc\framework\MemBufInputSource.hpp>
+#include <xercesc\util\regx\RegxParser.hpp>
 
 #include <map>
 #include <string>
@@ -147,7 +148,7 @@ bool extract_bb (DOMNode * Node ,int& x1,int& y1,int& x2, int &y2)
 
 }
 
-void		get_key_word_candidates (std::string keyword, std::multimap <std::string, DOMNode *> dictionary ,std::vector <keyword_candidate > & KeyWord_candidates)
+void get_key_word_candidates (std::string keyword, std::multimap <std::string, DOMNode *> dictionary ,std::vector <keyword_candidate > & KeyWord_candidates)
 {
 
 	std::pair <std::multimap <std::string, DOMNode *>::iterator, std::multimap <std::string, DOMNode *>::iterator> ret_first,ret_second;
@@ -192,6 +193,16 @@ double custom_compare (std::string str1, std::string str2)
 
 void get_key_word_candidates_v2(std::string keyword, std::vector < std::pair <std::string, DOMNode *> > & vec ,std::vector <keyword_candidate > & KeyWord_candidates)
 {
+
+	std::string regularexp;
+
+	regularexp.append(".*");
+	regularexp.append(keyword);
+	regularexp.append(".*");
+
+
+	RegularExpression exp(regularexp.c_str());
+
 	for ( auto it = vec.begin(); it != vec.end(); it++)
 	{
 
@@ -203,7 +214,21 @@ void get_key_word_candidates_v2(std::string keyword, std::vector < std::pair <st
 			key.Node = it->second;
 			key.probability = prob;
 			KeyWord_candidates.push_back(key);
+
+			continue;
 		}
+		if ( exp.matches(it->first.c_str()))
+		{
+
+			keyword_candidate key;
+			key.keyword = it->first;
+			key.Node = it->second;
+			key.probability = 0.8;
+			KeyWord_candidates.push_back(key);
+			//std::cout << "reg exp";
+		}
+
+		
 
 
 	}
@@ -256,8 +281,8 @@ bool find_keyword_matching_on_line (std::vector <keyword_candidate > keys1,std::
 			if ((unsigned int) parent1  == (unsigned int)parent2)
 			{
 
-				show_element ( it1->Node->getParentNode());
-				show_element ( it2->Node->getParentNode());
+				//show_element ( it1->Node->getParentNode());
+				//show_element ( it2->Node->getParentNode());
 
 
 
@@ -297,7 +322,6 @@ markerbox get_marker_box ( keyword_candidate & key1, keyword_candidate & key2,se
 	return box;
 }
 
-
 markerbox get_marker_box_left ( keyword_candidate & key1,search_entry & entry)
 {
 	markerbox box;
@@ -322,7 +346,6 @@ markerbox get_marker_box_left ( keyword_candidate & key1,search_entry & entry)
 
 	return box;
 }
-
 
 markerbox get_marker_box_right ( keyword_candidate & key2 ,search_entry & entry)
 {
@@ -359,8 +382,8 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 	for ( int i =0 ; i < list->getLength(); i ++)
 	{
 
-		printf ("node name is %s\n", XMLString::transcode (doc->getChildNodes()->item(i)->getNodeName()));
-		printf ("node value is %s\n", XMLString::transcode (doc->getChildNodes()->item(i)->getNodeValue()));
+		//printf ("node name is %s\n", XMLString::transcode (doc->getChildNodes()->item(i)->getNodeName()));
+		//printf ("node value is %s\n", XMLString::transcode (doc->getChildNodes()->item(i)->getNodeValue()));
 
 		construct_multimap ( list->item(i),dictionary);
 		construct_vector ( list->item(i),vector_nodes);
@@ -378,13 +401,17 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 		
 			std::vector <keyword_candidate > KeyWord1_candidates,KeyWord2_candidates;
 
-
+			if (! search_entry_it->KeyPhrase1.empty())
+			{
 			get_key_word_candidates (search_entry_it->KeyPhrase1 ,dictionary ,KeyWord1_candidates);		
 			get_key_word_candidates (search_entry_it->KeyPhrase2 ,dictionary ,KeyWord2_candidates);
-
+			}
+			
+			if (! search_entry_it->KeyPhrase2.empty())
+			{
 			get_key_word_candidates_v2 (search_entry_it->KeyPhrase1 ,vector_nodes ,KeyWord1_candidates);	
 			get_key_word_candidates_v2 (search_entry_it->KeyPhrase2 ,vector_nodes ,KeyWord2_candidates);	
-
+			}
 
 			keyword_candidate key1,key2;
 
@@ -424,7 +451,6 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 	
 	return true;
 }
-
 
 void clear_search_entry (search_entry & entry)
 {
@@ -531,9 +557,14 @@ bool custom_parser ( std::string filename, std::vector <search_entry> & vec_entr
 
 
 
-		if ( *pointer == '/"')
+		if ( *pointer == '"')
 		{
 			quotes_flag = !quotes_flag;
+			continue;
+		}
+
+			if ( *pointer == '\t')
+		{
 			continue;
 		}
 
