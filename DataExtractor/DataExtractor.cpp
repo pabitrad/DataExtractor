@@ -135,17 +135,9 @@ bool extract_bb (DOMNode * Node ,int& x1,int& y1,int& x2, int &y2)
 
 					return true;
 
-
 				}
 
-
-
-
-
-
 		}
-
-
 }
 
 void get_key_word_candidates (std::string keyword, std::multimap <std::string, DOMNode *> dictionary ,std::vector <keyword_candidate > & KeyWord_candidates)
@@ -227,10 +219,6 @@ void get_key_word_candidates_v2(std::string keyword, std::vector < std::pair <st
 			KeyWord_candidates.push_back(key);
 			//std::cout << "reg exp";
 		}
-
-		
-
-
 	}
 
 }
@@ -328,8 +316,6 @@ markerbox get_marker_box_left ( keyword_candidate & key1,search_entry & entry)
 
 	box.KeyPhrase1 = key1.keyword;
 	
-
-
 	box.index = entry.index;
 
 	int x1,y1,x2,y2;
@@ -398,7 +384,6 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 		// for earch boundbox we have to search
 		// case if both words is
 
-		
 			std::vector <keyword_candidate > KeyWord1_candidates,KeyWord2_candidates;
 
 			if (! search_entry_it->KeyPhrase1.empty())
@@ -438,17 +423,14 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 					markerbox box = get_marker_box_left (  KeyWord1_candidates.at(0),*(search_entry_it));
 				boxes.push_back(box);
 				}
+			}
 
-
-			
+			if ( search_entry_it->NumberOfLines > 1 )
+			{
+				show_element ( KeyWord1_candidates.at(0).Node);
+	
 			}
 		}
-
-		
-
-
-
-	
 	return true;
 }
 
@@ -673,25 +655,13 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-
-
 #if 1
 
 	std::vector < search_entry > vec_entry;
 	custom_parser ( "DWC.config",  vec_entry);
-
-
 #endif
 
-
-
-
-
-
-
-
 	XMLPlatformUtils::Initialize();
-
 
 	char* text1,*text;
 
@@ -699,7 +669,6 @@ int main(int argc, char* argv[]) {
 	text1 = (char * )malloc (2 << 20);
 	// just to be quicker we can use previous parsed data that the program have done before
 	FILE * fd = fopen ("DWC1Test.hocr", "r");
-
 
 	memset (text1,0,2 << 20);
 
@@ -760,10 +729,8 @@ int main(int argc, char* argv[]) {
 	//parser->setValidationScheme(XercesDOMParser::Val_Always);
 	//parser->setDoNamespaces(true);    // optional
 
-
 	ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
 	parser->setErrorHandler(errHandler);
-
 
 	parser->setIgnoreCachedDTD(true);
 	parser->setLoadExternalDTD(false);
@@ -778,27 +745,19 @@ int main(int argc, char* argv[]) {
 		"myxml (in memory)");
 #endif
 
-
 	parser->parse(myxml_buf);
-
-
-
 
 	xercesc_3_1::DOMDocument * doc = parser->getDocument();
 
 	std::vector <markerbox>  boxes;
 
-
 	get_bounding_boxes (vec_entry , doc ,  boxes );
-
-
 
 	for ( auto it = boxes.begin(); it != boxes.end(); it++)
 	{
 		printf ("Box found with key1 %s, key2 %s, index - %d x1 - %d y1 - %d x2 - %d y2 i- %d\n", (*it).KeyPhrase1.c_str(),(*it).KeyPhrase2.c_str(),(*it).index, 
 			(*it).x1,(*it).y1,(*it).x2,(*it).y2)  ;	
 	}
-
 
 	return 0;
 }
