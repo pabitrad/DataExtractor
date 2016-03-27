@@ -172,7 +172,7 @@ double custom_compare (std::string str1, std::string str2)
 				if ( str1.at(i) == str2.at(i) )
 					k++;
 			}
-			if ( ((1.0*k)/str1.size()) > 0.7 )
+			if ( ((1.0*k)/str1.size()) > 0.5 )
 				return ((1.0*k)/str1.size());
 		}
 	}
@@ -384,12 +384,13 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 			if (! search_entry_it->KeyPhrase1.empty())
 			{
 			get_key_word_candidates (search_entry_it->KeyPhrase1 ,dictionary ,KeyWord1_candidates);		
-			get_key_word_candidates (search_entry_it->KeyPhrase2 ,dictionary ,KeyWord2_candidates);
+			get_key_word_candidates_v2 (search_entry_it->KeyPhrase1 ,vector_nodes ,KeyWord1_candidates);
+			
 			}
 			
 			if (! search_entry_it->KeyPhrase2.empty())
 			{
-			get_key_word_candidates_v2 (search_entry_it->KeyPhrase1 ,vector_nodes ,KeyWord1_candidates);	
+			get_key_word_candidates (search_entry_it->KeyPhrase2 ,dictionary ,KeyWord2_candidates);	
 			get_key_word_candidates_v2 (search_entry_it->KeyPhrase2 ,vector_nodes ,KeyWord2_candidates);	
 			}
 
