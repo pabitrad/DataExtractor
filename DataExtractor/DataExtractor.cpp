@@ -1,8 +1,3 @@
-// DataExtractor.cpp: определяет точку входа для консольного приложения.
-//
-
-// ConsoleApplication1.cpp: определяет точку входа для консольного приложения.
-//
 
 
 #include "stdafx.h"
@@ -692,10 +687,9 @@ int main(int argc, char* argv[]) {
 
 
 		text = tessApi.GetHOCRText(0)
-			//char *text = tessApi.GetUTF8Text();//распознаём
+			//char *text = tessApi.GetUTF8Text();
 
 
-			//---генерируем имя файла в который будет записан распознанный текст
 			char *fileName = NULL;
 		long prefixLength;
 		const char* lastDotPosition = strrchr(argv[1], '.');
