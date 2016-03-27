@@ -422,7 +422,7 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 
 			if ( search_entry_it->NumberOfLines > 1 )
 			{
-				show_element ( KeyWord1_candidates.at(0).Node);
+		//		show_element ( KeyWord1_candidates.at(0).Node);
 	
 			}
 		}
