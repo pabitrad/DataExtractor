@@ -183,10 +183,9 @@ void get_key_word_candidates_v2(std::string keyword, std::vector < std::pair <st
 
 	std::string regularexp;
 
-	regularexp.append(".*");
+	//regularexp.append(".*");
 	regularexp.append(keyword);
-	regularexp.append(".*");
-
+	//regularexp.append(".*");
 
 	RegularExpression exp(regularexp.c_str());
 
