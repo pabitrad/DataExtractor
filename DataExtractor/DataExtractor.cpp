@@ -192,7 +192,7 @@ void get_key_word_candidates_v2(std::string keyword, std::vector < std::pair <st
 
 	for ( auto it = vec.begin(); it != vec.end(); it++)
 	{
-
+/*
 		double prob;
 		if (prob = custom_compare(it->first,keyword) > 0.5)
 		{
@@ -203,7 +203,7 @@ void get_key_word_candidates_v2(std::string keyword, std::vector < std::pair <st
 			KeyWord_candidates.push_back(key);
 
 			continue;
-		}
+		}*/
 		if ( exp.matches(it->first.c_str()))
 		{
 
@@ -223,6 +223,7 @@ void construct_multimap ( DOMNode  * Node, std::multimap < std::string, DOMNode 
 	const XMLCh * x_str = Node->getNodeValue();
 	if ( x_str)
 	{
+		if (strlen(XMLString::transcode(x_str))>2)
 		map.insert( std::pair <std::string, DOMNode *>( std::string(XMLString::transcode(x_str)),Node));
 	}
 
@@ -240,6 +241,7 @@ void construct_vector ( DOMNode  * Node, std::vector < std::pair <std::string, D
 	const XMLCh * x_str = Node->getNodeValue();
 	if ( x_str)
 	{
+		if (strlen(XMLString::transcode(x_str))>2)
 		vec.push_back( std::pair <std::string, DOMNode *>( std::string(XMLString::transcode(x_str)),Node));
 	}
 
@@ -294,7 +296,7 @@ markerbox get_marker_box ( keyword_candidate & key1, keyword_candidate & key2,se
 	int x3,y3,x4,y4;
 
 	extract_bb(key1.Node->getParentNode(),x1,y1,x2,y2);
-	extract_bb(key1.Node->getParentNode(),x3,y3,x4,y4);
+	extract_bb(key2.Node->getParentNode(),x3,y3,x4,y4);
 
 	box.x1 = x2+entry.deltaX1;
 	box.y1 = y1+entry.deltaY1;
@@ -365,7 +367,7 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 
 		//printf ("node name is %s\n", XMLString::transcode (doc->getChildNodes()->item(i)->getNodeName()));
 		//printf ("node value is %s\n", XMLString::transcode (doc->getChildNodes()->item(i)->getNodeValue()));
-
+		
 		construct_multimap ( list->item(i),dictionary);
 		construct_vector ( list->item(i),vector_nodes);
 
