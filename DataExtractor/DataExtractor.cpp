@@ -41,6 +41,13 @@ struct keyword_candidate
 	double probability;
 };
 
+struct markerbox
+{	std::string KeyPhrase1;
+std::string KeyPhrase2;
+int index;
+int x1,y1,x2,y2;
+};
+
 struct search_entry
 {
 	std::string KeyPhrase1;
@@ -49,13 +56,8 @@ struct search_entry
 	int deltaX1,deltaY1,deltaX2,deltaY2;
 	int PrevDataXOffset,PrevDataYOffset,NextDataXOffset,NextDataYOffset;
 	int NumberOfLines;
-};
-
-struct markerbox
-{	std::string KeyPhrase1;
-std::string KeyPhrase2;
-int index;
-int x1,y1,x2,y2;
+	std::vector <markerbox>  boxes;
+	bool process_flag;
 };
 
 void show_element ( DOMNode *  Node)
@@ -353,7 +355,7 @@ markerbox get_marker_box_right ( keyword_candidate & key2 ,search_entry & entry)
 	return box;
 }
 
-bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocument * doc , std::vector <markerbox> &  boxes )
+bool get_bounding_boxes ( std::vector <search_entry> & vec ,xercesc_3_1::DOMDocument * doc  )
 {
 
 	std::multimap <std::string, DOMNode *> dictionary;
@@ -402,7 +404,8 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 			{
 				markerbox box = get_marker_box ( key1, key2,*(search_entry_it));
 
-				boxes.push_back(box);
+				search_entry_it->boxes.push_back(box);
+				search_entry_it->process_flag = true;
 			}
 			else
 			{
@@ -410,7 +413,9 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 				{
 					
 					markerbox box = get_marker_box_right (  KeyWord2_candidates.at(0),*(search_entry_it));
-					boxes.push_back(box);
+					search_entry_it->boxes.push_back(box);
+					if (search_entry_it->KeyPhrase1.size())
+						search_entry_it->process_flag = false;
 				}
 
 
@@ -418,9 +423,12 @@ bool get_bounding_boxes ( std::vector <search_entry> vec ,xercesc_3_1::DOMDocume
 				{
 					
 					markerbox box = get_marker_box_left (  KeyWord1_candidates.at(0),*(search_entry_it));
-				boxes.push_back(box);
+					search_entry_it->boxes.push_back(box);
+						if (search_entry_it->KeyPhrase2.size())
+						search_entry_it->process_flag = false;
 				}
 			}
+		
 
 			if ( search_entry_it->NumberOfLines > 1 )
 			{
@@ -745,14 +753,13 @@ int main(int argc, char* argv[]) {
 
 	xercesc_3_1::DOMDocument * doc = parser->getDocument();
 
-	std::vector <markerbox>  boxes;
+	get_bounding_boxes (vec_entry , doc );
 
-	get_bounding_boxes (vec_entry , doc ,  boxes );
-
-	for ( auto it = boxes.begin(); it != boxes.end(); it++)
+	for ( auto it = vec_entry.begin(); it != vec_entry.end(); it++)
 	{
-		printf ("Box found with key1 %s, key2 %s, index - %d x1 - %d y1 - %d x2 - %d y2 i- %d\n", (*it).KeyPhrase1.c_str(),(*it).KeyPhrase2.c_str(),(*it).index, 
-			(*it).x1,(*it).y1,(*it).x2,(*it).y2)  ;	
+		for ( std::vector <markerbox>::iterator it2 = it->boxes.begin(); it2 != it->boxes.end() ; it2++)
+			printf ("Box found with key1 %s, key2 %s, index - %d x1 - %d y1 - %d x2 - %d y2 i- %d\n", (*it).KeyPhrase1.c_str(),(*it).KeyPhrase2.c_str(),(*it2).index, 
+			(*it2).x1,(*it2).y1,(*it2).x2,(*it2).y2)  ;	
 	}
 
 	return 0;
