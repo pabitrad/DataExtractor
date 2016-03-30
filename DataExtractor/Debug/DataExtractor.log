@@ -1,4 +1,4 @@
-﻿Построение начато 29.03.2016 18:34:07.
+﻿Построение начато 30.03.2016 14:53:33.
 Проект "C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\DataExtractor\DataExtractor.vcxproj" в узле 2 (целевые объекты Build).
 ClCompile:
   C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\DataExtractor\\..\xerces" /I"C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\DataExtractor\\..\tesseract-3.02.02-win32-lib-include-dirs\include" /I"C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\xerces" /ZI /nologo /W1 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\tess_img2tbl.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt DataExtractor.cpp
@@ -15,4 +15,4 @@ Link:
 
 Построение успешно завершено.
 
-Затраченное время: 00:00:02.82
+Затраченное время: 00:00:02.43

@@ -224,7 +224,7 @@ void construct_multimap ( DOMNode  * Node, std::multimap < std::string, DOMNode 
 	const XMLCh * x_str = Node->getNodeValue();
 	if ( x_str)
 	{
-		if (strlen(XMLString::transcode(x_str))>2)
+		if ((XMLString::transcode(x_str))[0] !='\n' )
 		map.insert( std::pair <std::string, DOMNode *>( std::string(XMLString::transcode(x_str)),Node));
 	}
 
@@ -242,7 +242,7 @@ void construct_vector ( DOMNode  * Node, std::vector < std::pair <std::string, D
 	const XMLCh * x_str = Node->getNodeValue();
 	if ( x_str)
 	{
-		if (strlen(XMLString::transcode(x_str))>2)
+		if ((XMLString::transcode(x_str))[0] !='\n' )
 		vec.push_back( std::pair <std::string, DOMNode *>( std::string(XMLString::transcode(x_str)),Node));
 	}
 
