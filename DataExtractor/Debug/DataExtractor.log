@@ -1,18 +1,50 @@
-﻿Построение начато 30.03.2016 14:53:33.
+﻿Построение начато 31.03.2016 19:01:35.
 Проект "C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\DataExtractor\DataExtractor.vcxproj" в узле 2 (целевые объекты Build).
 ClCompile:
   C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\DataExtractor\\..\xerces" /I"C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\DataExtractor\\..\tesseract-3.02.02-win32-lib-include-dirs\include" /I"C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\xerces" /ZI /nologo /W1 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\tess_img2tbl.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt DataExtractor.cpp
   DataExtractor.cpp
-c:\users\user\documents\visual studio 2012\projects\dataextractor\tesseract-3.02.02-win32-lib-include-dirs\include\leptonica\environ.h(277): warning C4005: snprintf: изменение макроопределения
-          c:\users\user\documents\visual studio 2012\projects\dataextractor\tesseract-3.02.02-win32-lib-include-dirs\include\tesseract\platform.h(33): см. предыдущее определение "snprintf"
-c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(138): warning C4715: extract_bb: значение возвращается не при всех путях выполнения
-c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(181): warning C4715: custom_compare: значение возвращается не при всех путях выполнения
-Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\Debug\tess_img2tbl.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\DataExtractor\../Debug" libtesseract302.lib liblept168.lib "giflib416-static-mtdll.lib" "libjpeg8c-static-mtdll.lib" "zlib125-static-mtdll.lib" "libtiff394-static-mtdll.lib" "libpng143-static-mtdll.lib" "xerces-c_3D.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\Debug\tess_img2tbl.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\Debug\tess_img2tbl.lib" /MACHINE:X86 Debug\DataExtractor.obj
-  Debug\stdafx.obj
-  DataExtractor.vcxproj -> C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\Debug\tess_img2tbl.exe
-Построение проекта "C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\DataExtractor\DataExtractor.vcxproj" завершено (целевые объекты Build).
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(342): error C2143: синтаксическая ошибка: отсутствие ")" перед "{"
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(343): error C2065: keys1: необъявленный идентификатор
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(343): error C2228: выражение слева от ".begin" должно представлять класс, структуру или объединение
+          тип: 'unknown-type'
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(343): error C3536: it1: не может использоваться до инициализации
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(343): error C2228: выражение слева от ".end" должно представлять класс, структуру или объединение
+          тип: 'unknown-type'
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(345): error C2065: keys2: необъявленный идентификатор
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(345): error C2228: выражение слева от ".begin" должно представлять класс, структуру или объединение
+          тип: 'unknown-type'
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(345): error C3536: it2: не может использоваться до инициализации
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(345): error C2228: выражение слева от ".end" должно представлять класс, структуру или объединение
+          тип: 'unknown-type'
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(347): error C3536: it1: не может использоваться до инициализации
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(347): error C2227: выражение слева от "->Node" должно указывать на тип класса, структуры или объединения либо на универсальный тип
+          тип: int
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(347): error C2227: выражение слева от "->getParentNode" должно указывать на тип класса, структуры или объединения либо на универсальный тип
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(348): error C3536: it2: не может использоваться до инициализации
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(348): error C2227: выражение слева от "->Node" должно указывать на тип класса, структуры или объединения либо на универсальный тип
+          тип: int
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(348): error C2227: выражение слева от "->getParentNode" должно указывать на тип класса, структуры или объединения либо на универсальный тип
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(353): error C3536: it1: не может использоваться до инициализации
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(353): error C2227: выражение слева от "->Node" должно указывать на тип класса, структуры или объединения либо на универсальный тип
+          тип: int
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(353): error C2227: выражение слева от "->getParentNode" должно указывать на тип класса, структуры или объединения либо на универсальный тип
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(354): error C3536: it2: не может использоваться до инициализации
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(354): error C2227: выражение слева от "->Node" должно указывать на тип класса, структуры или объединения либо на универсальный тип
+          тип: int
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(354): error C2227: выражение слева от "->getParentNode" должно указывать на тип класса, структуры или объединения либо на универсальный тип
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(358): error C2065: key1: необъявленный идентификатор
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(358): error C3536: it1: не может использоваться до инициализации
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(358): error C2100: недопустимое косвенное обращение
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(359): error C2065: key2: необъявленный идентификатор
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(359): error C3536: it2: не может использоваться до инициализации
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(359): error C2100: недопустимое косвенное обращение
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(361): error C2562: push_vector_permut: функция типа "void", возвращающая значение
+          c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(340): см. объявление "push_vector_permut"
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(367): error C2562: push_vector_permut: функция типа "void", возвращающая значение
+          c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(340): см. объявление "push_vector_permut"
+c:\users\user\documents\visual studio 2012\projects\dataextractor\dataextractor\dataextractor.cpp(488): error C3861: find_keyword_matching_on_line: идентификатор не найден
+Построение проекта "C:\Users\user\Documents\Visual Studio 2012\Projects\DataExtractor\DataExtractor\DataExtractor.vcxproj" завершено (целевые объекты Build) с ошибкой.
 
-Построение успешно завершено.
+Сбой построения.
 
-Затраченное время: 00:00:02.43
+Затраченное время: 00:00:02.19

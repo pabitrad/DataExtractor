@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <tesseract/baseapi.h>
-#include <leptonica/allheaders.h>
+//#include <tesseract/baseapi.h>
+//#include <leptonica/allheaders.h>
 
 #include <xercesc/sax2/SAX2XMLReader.hpp>
 #include <xercesc/sax2/XMLReaderFactory.hpp>
@@ -27,11 +27,16 @@
 #include <vector>
 #include <tuple>
 
+//#include "DocumentProcessor.h"
+
 
 using namespace std;
 using namespace xercesc;
 
-
+struct nodes{
+		DOMNode * first_node;
+		DOMNode * last_node;
+	} ;
 
 
 struct keyword_candidate
@@ -137,7 +142,9 @@ bool extract_bb (DOMNode * Node ,int& x1,int& y1,int& x2, int &y2)
 		}
 }
 
-void get_key_word_candidates (std::string keyword, std::multimap <std::string, DOMNode *> dictionary ,std::vector <keyword_candidate > & KeyWord_candidates)
+void get_key_word_candidates (std::string keyword, 
+							  std::multimap <std::string, DOMNode *> dictionary 
+							  ,std::vector <keyword_candidate > & KeyWord_candidates)
 {
 
 	std::pair <std::multimap <std::string, DOMNode *>::iterator, std::multimap <std::string, DOMNode *>::iterator> ret_first,ret_second;
@@ -219,17 +226,69 @@ void get_key_word_candidates_v2(std::string keyword, std::vector < std::pair <st
 
 }
 
-void construct_multimap ( DOMNode  * Node, std::multimap < std::string, DOMNode * > & map )
+std::string get_class ( DOMNode * node)
 {
-	const XMLCh * x_str = Node->getNodeValue();
-	if ( x_str)
+
+	DOMNamedNodeMap * map = node->getAttributes();
+	if (map)
+	for ( int i =0 ; i < map->getLength(); i ++)
 	{
-		if ((XMLString::transcode(x_str))[0] !='\n' )
-		map.insert( std::pair <std::string, DOMNode *>( std::string(XMLString::transcode(x_str)),Node));
+		const XMLCh * x_str = map->item(i)->getNodeName();
+
+		if (x_str)
+			if(strcmp("class", XMLString::transcode (x_str)))
+			{
+				x_str = map->item(i)->getNodeValue();
+				if (x_str)
+					return std::string( XMLString::transcode (x_str));
+			}
+	}
+
+	return std::string();
+}
+
+DOMNode * get_parnet_line (DOMNode *nd)
+{
+	DOMNode * node;
+
+	node = nd->getParentNode();
+	if (!node)
+	{
+		return NULL;
+	}
+
+	if(!get_class(node).compare("ocr_line"))
+	{
+		return node;
+	}
+	else
+	{
+		return get_parnet_line(node);
+	}
+}
+
+void construct_multimap ( DOMNode  * Node, std::multimap < std::string, nodes > & map )
+{
+	
+	if (!get_class (Node).compare("ocr_word"))
+	{
+		const XMLCh * x_str = Node->getNodeValue();
+	
+		if ( x_str)
+		{
+		char * pChar = XMLString::transcode(x_str);
+		if (strlen(pChar) > 0 && *pChar != '\n' && *pChar != ' ')
+			{
+				nodes nd;
+				nd.first_node = Node;
+				nd.last_node = Node;
+
+				map.insert(std::pair <std::string, nodes>(std::string(XMLString::transcode(x_str)), nd ));
+			}
+		}
 	}
 
 	DOMNodeList * list = Node->getChildNodes();
-
 	for ( int i =0 ; i < list->getLength(); i ++)
 	{
 		construct_multimap ( list->item(i), map);
@@ -237,24 +296,48 @@ void construct_multimap ( DOMNode  * Node, std::multimap < std::string, DOMNode 
 
 }
 
-void construct_vector ( DOMNode  * Node, std::vector < std::pair <std::string, DOMNode * > > & vec )
+void construct_vector ( DOMNode  * Node, std::vector < std::pair <std::string, nodes > > & vec )
 {
-	const XMLCh * x_str = Node->getNodeValue();
-	if ( x_str)
+	static std::vector< std::pair < std::string, DOMNode * > > vec_current_line;
+	static DOMNode * current_line;
+
+	if (!get_class (Node).compare("ocr_word"))
 	{
-		if ((XMLString::transcode(x_str))[0] !='\n' )
-		vec.push_back( std::pair <std::string, DOMNode *>( std::string(XMLString::transcode(x_str)),Node));
+		if (current_line != get_parnet_line(Node))
+		{
+			current_line = get_parnet_line(Node);
+			vec_current_line.clear();
+		}
+	
+		const XMLCh * x_str = Node->getNodeValue();
+	
+		if ( x_str)
+		{
+		char * pChar = XMLString::transcode(x_str);
+		
+		
+		if (strlen(pChar) > 0 && *pChar != '\n' && *pChar != ' ')
+			{
+				nodes nd;
+				nd.first_node = Node;
+				nd.last_node = Node;
+
+				vec.push_back(std::pair <std::string, nodes>(std::string(XMLString::transcode(x_str)), nd ));
+			}
+		}
 	}
 
 	DOMNodeList * list = Node->getChildNodes();
-
 	for ( int i =0 ; i < list->getLength(); i ++)
 	{
 		construct_vector ( list->item(i), vec);
 	}
 
+
 }
 
+
+void push_vector_permut (
 bool find_keyword_matching_on_line (std::vector <keyword_candidate > keys1,std::vector <keyword_candidate > keys2, keyword_candidate & key1, keyword_candidate & key2)
 {
 	for ( auto it1 = keys1.begin() ; it1 != keys1.end(); it1++)
@@ -267,8 +350,8 @@ bool find_keyword_matching_on_line (std::vector <keyword_candidate > keys1,std::
 			if ((unsigned int) parent1  == (unsigned int)parent2)
 			{
 
-				//show_element ( it1->Node->getParentNode());
-				//show_element ( it2->Node->getParentNode());
+				show_element ( it1->Node->getParentNode());
+				show_element ( it2->Node->getParentNode());
 
 
 
@@ -358,19 +441,21 @@ markerbox get_marker_box_right ( keyword_candidate & key2 ,search_entry & entry)
 bool get_bounding_boxes ( std::vector <search_entry> & vec ,xercesc_3_1::DOMDocument * doc  )
 {
 
-	std::multimap <std::string, DOMNode *> dictionary;
-	std::vector < std::pair < std::string,  DOMNode *> > vector_nodes;
+	
+
+	std::multimap <std::string, nodes> dictionary;
+	std::vector < std::pair < std::string, nodes> > vector_nodes;
 
 	DOMNodeList * list = doc->getChildNodes();
 
 	for ( int i =0 ; i < list->getLength(); i ++)
 	{
 
-		//printf ("node name is %s\n", XMLString::transcode (doc->getChildNodes()->item(i)->getNodeName()));
-		//printf ("node value is %s\n", XMLString::transcode (doc->getChildNodes()->item(i)->getNodeValue()));
+		printf ("node name is %s\n", XMLString::transcode (doc->getChildNodes()->item(i)->getNodeName()));
+		printf ("node value is %s\n", XMLString::transcode (doc->getChildNodes()->item(i)->getNodeValue()));
 		
 		construct_multimap ( list->item(i),dictionary);
-		construct_vector ( list->item(i),vector_nodes);
+		//construct_vector ( list->item(i),vector_nodes);
 
 	}
 
@@ -386,15 +471,15 @@ bool get_bounding_boxes ( std::vector <search_entry> & vec ,xercesc_3_1::DOMDocu
 
 			if (! search_entry_it->KeyPhrase1.empty())
 			{
-			get_key_word_candidates (search_entry_it->KeyPhrase1 ,dictionary ,KeyWord1_candidates);		
-			get_key_word_candidates_v2 (search_entry_it->KeyPhrase1 ,vector_nodes ,KeyWord1_candidates);
+//			get_key_word_candidates (search_entry_it->KeyPhrase1 ,dictionary ,KeyWord1_candidates);		
+//			get_key_word_candidates_v2 (search_entry_it->KeyPhrase1 ,vector_nodes ,KeyWord1_candidates);
 			
 			}
 			
 			if (! search_entry_it->KeyPhrase2.empty())
 			{
-			get_key_word_candidates (search_entry_it->KeyPhrase2 ,dictionary ,KeyWord2_candidates);	
-			get_key_word_candidates_v2 (search_entry_it->KeyPhrase2 ,vector_nodes ,KeyWord2_candidates);	
+//			get_key_word_candidates (search_entry_it->KeyPhrase2 ,dictionary ,KeyWord2_candidates);	
+//			get_key_word_candidates_v2 (search_entry_it->KeyPhrase2 ,vector_nodes ,KeyWord2_candidates);	
 			}
 
 			keyword_candidate key1,key2;
@@ -577,7 +662,7 @@ bool custom_parser ( std::string filename, std::vector <search_entry> & vec_entr
 			}
 		}
 
-		if (*pointer == ' ' && temp_str.empty())
+		if (*pointer == ' ' &&  !quotes_flag)
 			continue;
 
 		temp_str.push_back(*pointer);
@@ -755,12 +840,15 @@ int main(int argc, char* argv[]) {
 
 	get_bounding_boxes (vec_entry , doc );
 
-	for ( auto it = vec_entry.begin(); it != vec_entry.end(); it++)
+	//DocumentProcessor documentProcessor;
+	//documentProcessor.processDocuments();
+
+	/*for ( auto it = vec_entry.begin(); it != vec_entry.end(); it++)
 	{
 		for ( std::vector <markerbox>::iterator it2 = it->boxes.begin(); it2 != it->boxes.end() ; it2++)
 			printf ("Box found with key1 %s, key2 %s, index - %d x1 - %d y1 - %d x2 - %d y2 i- %d\n", (*it).KeyPhrase1.c_str(),(*it).KeyPhrase2.c_str(),(*it2).index, 
 			(*it2).x1,(*it2).y1,(*it2).x2,(*it2).y2)  ;	
-	}
+	}*/
 
 	return 0;
 }
