@@ -572,6 +572,7 @@ bool get_bounding_boxes(std::vector <search_entry> & vec, xercesc_3_1::DOMDocume
 				markerbox box;
 				if (search_entry_it->KeyPhrase2.size())
 				{
+					box = get_marker_box_left(KeyWord1_candidates.at(0), *(search_entry_it)); //Pabitra
 
 					search_entry_it->process_flag = false;
 
